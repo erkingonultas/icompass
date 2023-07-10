@@ -4,7 +4,13 @@ import 'package:flutter_compass/flutter_compass.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const MaterialApp(
+      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      home: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -36,24 +42,36 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.blueGrey,
-          title: const Text('iCompass'),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.grey.shade800,
+        title: const Text(
+          'iCompass',
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        body: Center(
-          child: Builder(builder: (context) {
-            if (_hasPermission) {
-              return _buildCompass();
-            } else {
-              return _buildPermissionSheet();
-            }
-          }),
+        leading: IconButton(
+          onPressed: () {
+            return showAboutDialog(
+              context: context,
+              applicationName: "iCompass",
+              useRootNavigator: false,
+              children: [
+                const Text('Designed and developed by\nErkin Gönültaş.'),
+              ],
+            );
+          },
+          icon: const Icon(Icons.info),
         ),
+      ),
+      body: Center(
+        child: Builder(builder: (context) {
+          if (_hasPermission) {
+            return _buildCompass();
+          } else {
+            return _buildPermissionSheet();
+          }
+        }),
       ),
     );
   }
@@ -72,11 +90,11 @@ class _MyAppState extends State<MyApp> {
           if (direction == null) {
             return const Text('Device does not have sensors');
           }
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Transform.rotate(
-                angle: direction * (math.pi / 180) * -1,
-                child: Image.asset('lib/assets/bg.jpg')),
+          return Transform.rotate(
+            angle: direction * (math.pi / 180) * -1,
+            child: Image.asset(
+              'lib/assets/bg.jpg',
+            ),
           );
         });
   }
@@ -84,9 +102,7 @@ class _MyAppState extends State<MyApp> {
   Widget _buildPermissionSheet() {
     return ElevatedButton(
       child: const Text('Request Permission'),
-      onPressed: () => Permission.locationWhenInUse
-          .request()
-          .then((value) => _fetchPermissionStatus()),
+      onPressed: () => Permission.locationWhenInUse.request().then((value) => _fetchPermissionStatus()),
     );
   }
 }
